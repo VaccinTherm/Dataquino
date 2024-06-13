@@ -29,11 +29,11 @@ const serial = async (
         {
             // altere!
             // Credenciais do banco de dados
-            host: '10.18.37.57',
-            user: 'aluno',
-            password: 'Sptech#2024',
+            host: 'localhost',
+            user: 'root',
+            password: 'Cadu@2023',
             database: 'vaccinTherm',
-            port: 3307
+            port: 3306
         }
     ).promise();
 
@@ -79,9 +79,19 @@ const serial = async (
 
             // altere!
             // Este insert irá inserir os dados na tabela "medida"
+            let status = 'Ideal';
+            if (dht11Temperatura > 1 && dht11Temperatura <= 2) {
+                status = 'Alerta'
+              } else if (dht11Temperatura < 1) {
+                status = 'Emergência'
+              } else if (dht11Temperatura > 8 && dht11Temperatura <= 9){
+                status = 'Alerta'
+              } else if (dht11Temperatura > 9){
+                status = 'Emergência'
+              }
+
             await poolBancoDados.execute(
-                'INSERT INTO Registro (idRegistro, dataHora, dht11Umidade, dht11Temperatura, fkSensorRegistro, fkVacinaRegistro, fkUsuarioRepresentante) VALUES (DEFAULT, now(),?, ?, 1, 1, 1)',
-                [dht11Umidade, dht11Temperatura]
+                `INSERT INTO Registro (dataHora, dht11Umidade, dht11Temperatura, fkSensorRegistro, fkVacinaRegistro, fkUsuarioRepresentante, fkVeiculoRegistro, dataEntrega, status) VALUES (NOW(), ${dht11Umidade}, ${dht11Temperatura}, 1, 1, 1, 1, '2024-06-15', '${status}')`
             );
             console.log("valores inseridos no banco: ", dht11Umidade + ", " + dht11Temperatura )
         
